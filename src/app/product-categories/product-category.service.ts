@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { throwError, Observable } from 'rxjs';
+import { tap, map, catchError} from 'rxjs/operators'
 
 import { ProductCategory } from './product-category';
 
@@ -10,6 +11,12 @@ import { ProductCategory } from './product-category';
 })
 export class ProductCategoryService {
   private productCategoriesUrl = 'api/productCategories';
+
+  public productCategories$ = this.http.get<ProductCategory[]>(this.productCategoriesUrl)
+    .pipe(
+      tap(item => console.log('Categories: ', JSON.stringify(item))),
+      catchError(this.handleError)
+    );
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +32,10 @@ export class ProductCategoryService {
       // The response body may contain clues as to what went wrong,
       errorMessage = `Backend returned code ${err.status}: ${err.body.error}`;
     }
-    console.error(err);
+
+    console.error(errorMessage);
     return throwError(errorMessage);
   }
 }
+
+
