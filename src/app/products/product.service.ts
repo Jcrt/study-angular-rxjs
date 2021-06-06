@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { combineLatest, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, combineAll, map, tap } from 'rxjs/operators';
 
 import { Product } from './product';
 import { Supplier } from '../suppliers/supplier';
 import { SupplierService } from '../suppliers/supplier.service';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { CombineLatestOperator } from 'rxjs/internal/observable/combineLatest';
 
 @Injectable({
   providedIn: 'root'
@@ -32,14 +33,14 @@ export class ProductService {
     [this.products$, this.productCategoryService.productCategories$]
   ).pipe(
     map(([products, categories]) => {
-      debugger;
-      products.map(item => ({
-        ...item,
-        price: item.price * 1.3,
-        category: categories.find(cat => cat.id === item.categoryId).name,
-        searchKey: [item.productName]
+      return products.map(product => ({
+        ...product,
+        price: product.price * 1.3,
+        category: categories.find(cat => cat.id === product.categoryId).name,
+        searchKey: [product.productName]
       }) as Product);
-    })
+    }),
+    tap(data => console.log(data))
   );
 
   constructor(
