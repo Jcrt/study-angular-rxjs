@@ -3,13 +3,12 @@
     {{pageTitle}}
   </div>
 
-  <div class='card-body'
-       *ngIf="products$ | async of products">
-    <div class='list-group'>
+  <div class='card-body'>
+    <div class='list-group' *ngIf="products$ | async as products">
       <button type='button'
               class='list-group-item'
               *ngFor='let product of products'
-              [ngClass]="{'active': product?.id === selectedProductId}"
+              [ngClass]="{'active': product?.id === (selectedProduct$ | async)?.id}"
               (click)='onSelected(product.id)'>
         {{ product.productName }} ({{ product.category }})
       </button>
